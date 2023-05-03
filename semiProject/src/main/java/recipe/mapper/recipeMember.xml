@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipeMember">
+ <insert id="insert">
+  insert into recipemember (id, name, password, birth_date)
+  values (#{id}, #{name}, #{password}, #{birth_date})
+ </insert>
+ 
+ <select id="idCheck" resultType="int">
+  select count(id) from recipemember
+  where id=#{id}
+ </select>
+ 
+ <select id="login" resultType="recipe.dto.RecipeMemberDTO">
+  select * from recipemember
+  where id=#{id}
+ </select>
+ 
+ <select id="view" resultType="recipe.dto.RecipeMemberDTO">
+  select * from recipemember
+  where id=#{id}
+ </select>
+ 
+ <update id="updatePassword">
+  update recipemember
+  set password=#{password}
+  where id=#{id}
+ </update>
+ 
+ <update id="update">
+  update recipemember
+  set name=#{name}, birth_date=#{birth_date}
+  where id=#{id}
+ </update>
+ 
+ <select id="memberList" resultType="recipe.dto.RecipeMemberDTO">
+  select * from recipemember
+  where not id='admin'
+ </select>
+ 
+ <select id="search" resultType="recipe.dto.RecipeMemberDTO">
+  select * from recipemember
+  where not id='admin' and id like #{search}
+ </select>
+ 
+ <update id="out">
+  update recipemember
+  set show='N'
+  where id=#{id}
+ </update>
+ 
+ <update id="in">
+  update recipemember
+  set show='Y'
+  where id=#{id}
+ </update>
+ 
+ <update id="grant">
+  update recipemember
+  set admin2='Y'
+  where id=#{id}
+ </update>
+ 
+ <update id="revoke">
+  update recipemember
+  set admin2='N'
+  where id=#{id}
+ </update>
+ 
+ <update id="upPoint">
+  update recipemember
+  set point=point+10
+  where id=#{id}
+ </update>
+ 
+ <update id="downPoint">
+  update recipemember
+  set point=point-10
+  where id=#{id}
+ </update>
+ 
+ <update id="point">
+  update recipemember
+  set point=#{point}
+  where id=#{id}
+ </update>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipeStoreBasket">
+ <insert id="insert">
+  insert into recipestorebasket (bnum, id, snum, amount)
+  values ((select nvl(max(bnum+1), 1) from recipestorebasket), #{id}, #{snum}, #{amount})
+ </insert>
+ 
+ <select id="list" resultType="recipe.dto.RecipeStoreBasketDTO">
+  select bnum, id, b.snum, amount, sname, price, a.show from recipestorebasket a, recipestore b
+  where a.snum=b.snum and id=#{id} and b.show='Y'
+  order by bnum asc
+ </select>
+ 
+ <delete id="delete">
+  delete from recipestorebasket
+  where bnum=#{bnum}
+ </delete>
+ 
+ <update id="update">
+  update recipestorebasket
+  set amount=#{amount}
+  where bnum=#{bnum}
+ </update>
+ 
+ <select id="view" resultType="recipe.dto.RecipeStoreBasketDTO">
+  select bnum, id, b.snum, amount, sname, price, a.show from recipestorebasket a, recipestore b
+  where a.snum=b.snum and bnum=#{bnum}
+ </select>
+ 
+ <update id="updateShow">
+  update recipestorebasket
+  set show='N'
+  where bnum=#{bnum}
+ </update>
+ 
+ <select id="count" resultType="int">
+  select count(*) from recipestorebasket a, recipestore b
+  where a.snum=b.snum and a.show='Y' and b.show='Y' and id=#{id}
+ </select>
+</mapper>

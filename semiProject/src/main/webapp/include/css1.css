@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+body {
+	overflow-x:hidden; overflow-y:auto;
+	width: 100vw;
+	height: 100vh;
+	position: relative;
+	z-index: 1;
+}
+body::after {
+	width: 100vw;
+	height: 100vh;
+	content: "";
+	background: url("https://cdn.pixabay.com/photo/2021/01/01/21/56/cooking-5880136_960_720.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	resize: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: -1;
+	opacity: 0.6;
+}
+#title {
+	background: linear-gradient(to right top, #1F1C2C, #928DAB);
+	color: transparent;
+	-webkit-background-clip: text;
+}
+#title a {
+	color: transparent;
+}
+.a:hover {
+	text-shadow: 3px 3px 5px black;
+}
+label {
+	font-weight: bold;
+}
+table {
+	table-layout: fixed;
+}
+.td_content {
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	overflow:hidden;
+}
+.input, .button {
+	border-radius: 10px;
+}

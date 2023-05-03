@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipeMessage">
+ <insert id="write">
+  insert into recipemessage (mnum, sender, receiver, content)
+  values ((select nvl(max(mnum)+1, 1) from recipemessage), #{sender}, #{receiver}, #{content})
+ </insert>
+ 
+ <select id="list" resultType="recipe.dto.RecipeMessageDTO">
+  select * 
+  from (
+        select A.*, rownum as rn 
+        from (
+	          select *
+	          from recipemessage
+	          where receiver=#{receiver}
+	          order by mnum desc) A
+	   ) 
+  where rn between #{start} and #{end}
+ </select>
+ 
+ <update id="read">
+  update recipemessage set read='Y'
+  where mnum=#{mnum}
+ </update>
+ 
+ <delete id="delete">
+  delete from recipemessage
+  where mnum=#{mnum}
+ </delete>
+ 
+ <select id="count" resultType="int">
+  select count(*) from recipemessage
+  where receiver=#{receiver}
+ </select>
+ 
+ <select id="newMessage" resultType="int">
+  select count(*) from recipemessage
+  where read='N' and receiver=#{receiver}
+ </select>
+</mapper>

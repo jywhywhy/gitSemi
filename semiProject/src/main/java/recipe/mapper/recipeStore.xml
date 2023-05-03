@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipeStore">
+ <select id="list" resultType="recipe.dto.RecipeStoreDTO">
+  select * 
+  from (
+        select A.*, rownum as rn 
+        from (
+	          select *
+	          from recipestore
+	          where show='Y'
+	          order by snum desc) A
+	   ) 
+  where rn between #{start} and #{end}
+ </select>
+ 
+ <select id="view" resultType="recipe.dto.RecipeStoreDTO">
+  select * from recipestore
+  where snum=#{snum}
+ </select>
+ 
+ <insert id="write">
+  insert into recipestore (snum, sname, price, description, picture) 
+  values ((select nvl(max(snum)+1, 1) from recipestore), #{sname}, #{price}, #{description}, #{picture})
+ </insert>
+ 
+ <select id="count" resultType="int">
+  select count(*) from recipestore
+  where show='Y'
+ </select>
+ 
+ <update id="delete">
+  update recipestore
+  set show='N'
+  where snum=#{snum}
+ </update>
+</mapper>

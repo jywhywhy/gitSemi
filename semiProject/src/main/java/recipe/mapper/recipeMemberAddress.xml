@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipeMemberAddress">
+ <select id="addressList" resultType="recipe.dto.RecipeMemberAddressDTO">
+  select * from recipememberaddress
+  where id=#{id}
+  order by anum asc
+ </select>
+ 
+ <update id="updateY">
+  update recipememberaddress
+  set default_address='Y'
+  where anum=#{anum}
+ </update>
+ 
+ <update id="updateN">
+  update recipememberaddress
+  set default_address='N'
+  where id=#{id} and not anum=#{anum}
+ </update>
+ 
+ <insert id="write">
+  insert into recipememberaddress (anum, aname, id, zipcode, address1, address2)
+  values ((select nvl(max(anum+1), 1) from recipememberaddress), #{aname}, #{id}, #{zipcode}, #{address1}, #{address2})
+ </insert>
+ 
+ <select id="count" resultType="int">
+  select count(*) from recipememberaddress
+  where show='Y' and id=#{id}
+ </select>
+ 
+ <select id="default_address" resultType="recipe.dto.RecipeMemberAddressDTO">
+  select * from recipememberaddress
+  where show='Y' and id=#{id} and default_address='Y'
+ </select>
+
+ <update id="delete">
+  update recipememberaddress
+  set show='N', default_address='N'
+  where anum=#{anum}
+ </update>
+ 
+ <select id="default_anum" resultType="int">
+  select anum from recipememberaddress
+  where id=#{id} and default_address='Y'
+ </select>
+</mapper>

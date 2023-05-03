@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipeBoard">
+ <select id="list" resultType="recipe.dto.RecipeBoardDTO">
+  select * 
+  from (
+       select B.*, rownum as rnum 
+       from (
+             select num, id, subject, content, read_count, post_date, ref, re_step, re_level, show, parent_num, good, filename, notice
+             from recipeboard
+             where subject like #{search} or content like #{search}
+             minus
+             select num, id, subject, content, read_count, post_date, ref, re_step, re_level, show, parent_num, good, filename, notice
+             from (
+                   select A.*, rownum as rn
+                   from (
+                         select *
+                         from recipeboard
+                         where notice=1
+                         order by post_date desc) A
+             )
+             where rn>=4
+             order by notice desc, ref desc, re_step asc, post_date desc) B
+  )
+  where rnum between #{start} and #{end}
+ </select>
+
+ <select id="viewContent" resultType="recipe.dto.RecipeBoardDTO">
+  select * from recipeboard
+  where num=#{num}
+ </select>
+ 
+ <select id="count" resultType="int">
+  select count(*) from recipeboard
+  where (subject like #{search} or content like #{search}) and notice = 0
+ </select>
+ 
+ <insert id="write">
+  insert into recipeboard (num, id, subject, content, ref, re_step, re_level, filename) 
+  values ((select nvl(max(num)+1, 1) from recipeboard), #{id}, #{subject}, #{content}, (select nvl(max(num)+1, 1) from recipeboard), 1, 0, #{filename})
+ </insert>
+ 
+ <update id="updateRead_count">
+  update recipeBoard
+  set read_count=read_count+1
+  where num=#{num}
+ </update>
+ 
+ <select id="searchList" resultType="recipe.dto.RecipeBoardDTO">
+  select * from recipeboard
+  where subject like #{search} or content like #{search}
+ </select>
+ 
+ <update id="update">
+  update recipeboard set subject=#{subject}, content=#{content}, filename=#{filename}
+  where num=#{num}
+ </update>
+ 
+ <insert id="reWrite">
+  insert into recipeboard (num, id, subject, content, ref, re_step, re_level, parent_num, filename) 
+  values ((select nvl(max(num)+1, 1) from recipeboard), #{id}, #{subject}, #{content}, #{ref}, #{re_step}, #{re_level}, #{parent_num}, #{filename})
+ </insert>
+ 
+ <select id="view" resultType="recipe.dto.RecipeBoardDTO">
+  select * 
+  from (
+        select A.*, rownum as rn 
+        from (
+	          select *
+	          from recipeboard
+	          where id=#{id}
+	          order by post_date desc) A
+	   ) 
+  where rn between #{start} and #{end}
+ </select>
+ 
+ <select id="viewCount" resultType="int">
+  select count(*) from recipeboard
+  where id=#{id}
+ </select>
+ 
+ <update id="updateStep">
+  update recipeboard
+  set re_step=re_step+1
+  where ref=#{ref} and re_step >= #{re_step}
+ </update>
+ 
+ <update id="updateShow">
+  update recipeboard set show='N'
+  where num=#{num}
+ </update>
+ 
+ 
+ <update id="good">
+  update recipeboard set good=good+1
+  where num=#{num}
+ </update>
+ 
+ <update id="noGood">
+  update recipeboard set good=good-1
+  where num=#{num}
+ </update>
+ 
+ <select id="goodList" resultType="recipe.dto.RecipeBoardDTO">
+  select * 
+  from (
+        select C.*, rownum as rn 
+        from (
+	          select a.num, a.id, a.subject, a.content, a.read_count, a.post_date, a.ref, a.re_step, a.re_level, a.show, a.parent_num, a.good, a.filename, a.notice
+              from recipeboard a, recipeboardgood b
+              where a.num=b.num and b.id=#{id}
+	          order by post_date desc) C
+	   ) 
+  where rn between #{start} and #{end}
+ </select>
+ 
+ <select id="goodCount" resultType="int">
+  select count(*)
+  from recipeboard a, recipeboardgood b
+  where a.num=b.num and b.id=#{id}
+ </select>
+ 
+ <insert id="writeNotice">
+  insert into recipeboard (num, id, subject, content, ref, re_step, re_level, parent_num, filename, notice) 
+  values ((select nvl(max(num)+1, 1) from recipeboard), #{id}, #{subject}, #{content}, #{ref}, #{re_step}, #{re_level}, #{parent_num}, #{filename}, 1)
+ </insert>
+ 
+ <select id="noticeList" resultType="recipe.dto.RecipeBoardDTO">
+  select * 
+  from (
+        select A.*, rownum as rn 
+        from (
+	          select * 
+	          from recipeboard
+	          where notice=1
+	          order by post_date desc) A
+	   ) 
+  where rn between #{start} and #{end}
+ </select>
+ 
+ <select id="noticeCount" resultType="int">
+  select count(*)
+  from recipeboard
+  where notice=1
+ </select>
+ 
+ <select id="bestGood" resultType="recipe.dto.RecipeBoardDTO">
+  select *
+  from (
+        select *
+        from recipeboard
+        where notice=0
+        order by good desc
+  ) 
+  where rownum=1
+ </select>
+ <select id="bestRead_count" resultType="recipe.dto.RecipeBoardDTO">
+  select *
+  from (
+        select *
+        from recipeboard
+        where notice=0
+        order by read_count desc
+  ) 
+  where rownum=1
+ </select>
+ 
+ <select id="bestMember" resultType="String">
+  select id
+  from (
+        select id, count(*) count
+        from recipeboard
+        where notice=0
+        group by id
+        order by count desc
+  ) 
+  where rownum=1
+ </select>
+ 
+</mapper>

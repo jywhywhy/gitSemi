@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipeStorePurchaseList">
+ <insert id="firstWrite">
+  insert into recipestorepurchaselist (lnum, bnum, anum, id, order_num, order_date)
+  values ( (select nvl(max(lnum+1), 1) from recipestorepurchaselist), #{bnum}, #{anum}, #{id}, (select nvl(max(lnum+1), 1) from recipestorepurchaselist), #{order_date})
+  <selectKey resultType="int" keyProperty="order_num" order="AFTER">
+   select max(lnum) from recipestorepurchaselist
+  </selectKey>
+ </insert>
+ 
+ <insert id="write">
+  insert into recipestorepurchaselist (lnum, bnum, anum, id, order_num, order_date)
+  values ( (select nvl(max(lnum+1), 1) from recipestorepurchaselist), #{bnum}, #{anum}, #{id}, #{order_num}, #{order_date})
+ </insert>
+ 
+ <select id="list" resultType="recipe.dto.RecipeStorePurchaseListDTO">
+  select order_num, a.anum, address1, address2, zipcode, order_date
+  from recipestorepurchaselist l, recipememberaddress a
+  where l.anum=a.anum and l.id=#{id}
+  group by order_num, a.anum, address1, address2, zipcode, order_date
+  order by order_date desc
+ </select>
+ 
+ <select id="view" resultType="recipe.dto.RecipeStorePurchaseListDTO">
+  select lnum, s.snum, s.sname, s.price, b.amount, aname, picture, address1, address2, zipcode, order_num
+  from recipestorepurchaselist l, recipememberaddress a, recipestorebasket b, recipestore s
+  where l.anum=a.anum and l.bnum=b.bnum and b.snum=s.snum and order_num=#{order_num}
+  order by lnum asc
+ </select>
+ 
+ <select id="moneyAll" resultType="recipe.dto.RecipeStorePurchaseListDTO">
+  select order_num, sum(price * amount) moneyAll
+  from recipestorepurchaselist l, recipestorebasket b, recipestore s
+  where l.bnum=b.bnum and b.snum=s.snum and order_num=#{order_num}
+  group by order_num
+ </select>
+ 
+</mapper>
