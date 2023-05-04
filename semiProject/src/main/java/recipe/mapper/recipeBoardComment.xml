@@ -12,7 +12,7 @@
   update recipeboardcomment set content=#{content}, re='Y'
   where comment_num=#{comment_num}
  </update>
- 
+
  <insert id="insert">
   insert into recipeboardcomment (comment_num, num, id, content, ref, re_step, re_level)
   values ((select nvl(max(comment_num)+1, 1) from recipeboardcomment), #{num}, #{id}, #{content}, (select nvl(max(comment_num)+1, 1) from recipeboardcomment), 1, 0)
