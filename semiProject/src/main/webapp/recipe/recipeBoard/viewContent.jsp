@@ -93,7 +93,9 @@ $(function() {
      </div>
      <hr style="width: 100%;">
      <div class="mb-5" style="clear: both;">
-      <img id="viewContent_img" alt="" src="${path}/recipeBoard_servlet/img.do?num=${dto.num}" style="width: 50%; height: 50%;"> <br>
+      <c:if test="${dto.filename != '-'}">
+       <img id="viewContent_img" alt="" src="${path}/recipeBoard_servlet/img.do?num=${dto.num}" style="width: 50%; height: 50%;"> <br>
+      </c:if>
       &nbsp;${dto.content}
      </div>
      <c:if test="${dto.re_level > 0}">
